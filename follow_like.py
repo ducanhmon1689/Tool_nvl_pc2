@@ -54,7 +54,7 @@ def send_follow_request(url='http://10.0.0.17:8000/follow'):
             log(f"Lỗi khi gửi yêu cầu tới server: HTTP {response.status_code}")
             return f"Error: HTTP {response.status_code}"
     except requests.exceptions.Timeout:
-        log(f"Lỗi: Yêu cầu tới {url} bị timeout sau 60 giây")
+        log(f"Lỗi: Yêu cầu tới {url} bị timeout sau 30 giây")
         return "Error: Request timed out"
     except requests.exceptions.ConnectionError:
         log(f"Lỗi: Không thể kết nối tới {url}. Kiểm tra mạng hoặc server")
