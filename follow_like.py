@@ -1,4 +1,5 @@
 import os
+import subprocess
 import requests
 from datetime import datetime
 
@@ -14,13 +15,34 @@ def log(message):
     with open(log_file, 'a', encoding='utf-8') as f:
         f.write(f"{timestamp} - {message}\n")
 
-def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='906e90e9'):
+def get_device_id():
+    """Lấy device_id của thiết bị Android hiện tại"""
+    try:
+        # Sử dụng getprop để lấy ro.serialno
+        cmd = "getprop ro.serialno"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            device_id = result.stdout.strip()
+            if device_id:
+                log(f"Lấy được device_id: {device_id}")
+                return device_id
+            else:
+                log("Không lấy được device_id từ getprop")
+                return "unknown_device"
+        else:
+            log(f"Lỗi khi lấy device_id: {result.stderr}")
+            return "unknown_device"
+    except Exception as e:
+        log(f"Lỗi khi lấy device_id: {str(e)}")
+        return "unknown_device"
+
+def send_follow_request(url='http://10.0.0.17:8000/follow'):
     """Gửi yêu cầu Follow tới PC và nhận kết quả"""
     try:
-        # Gửi yêu cầu HTTP POST tới server trên PC
+        device_id = get_device_id()
         payload = {'device_id': device_id, 'task': 'FOLLOW'}
         log(f"Gửi yêu cầu tới {url} với payload: {payload}")
-        response = requests.post(url, json=payload, timeout=60)  # Tăng timeout lên 60s
+        response = requests.post(url, json=payload, timeout=60)
         
         if response.status_code == 200:
             result = response.json()
@@ -42,5 +64,5 @@ def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='906e90e9'
         return f"Error: {str(e)}"
 
 if __name__ == "__main__":
-    result = send_follow_request(device_id='906e90e9')
+    result = send_follow_request()
     print(result)
