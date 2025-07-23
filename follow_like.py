@@ -14,13 +14,13 @@ def log(message):
     with open(log_file, 'a', encoding='utf-8') as f:
         f.write(f"{timestamp} - {message}\n")
 
-def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='emulator-5554'):
+def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='906e90e9'):
     """Gửi yêu cầu Follow tới PC và nhận kết quả"""
     try:
         # Gửi yêu cầu HTTP POST tới server trên PC
         payload = {'device_id': device_id, 'task': 'FOLLOW'}
         log(f"Gửi yêu cầu tới {url} với payload: {payload}")
-        response = requests.post(url, json=payload, timeout=30)  # Tăng timeout lên 30s
+        response = requests.post(url, json=payload, timeout=60)  # Tăng timeout lên 60s
         
         if response.status_code == 200:
             result = response.json()
@@ -32,7 +32,7 @@ def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='emulator-
             log(f"Lỗi khi gửi yêu cầu tới server: HTTP {response.status_code}")
             return f"Error: HTTP {response.status_code}"
     except requests.exceptions.Timeout:
-        log(f"Lỗi: Yêu cầu tới {url} bị timeout sau 30 giây")
+        log(f"Lỗi: Yêu cầu tới {url} bị timeout sau 60 giây")
         return "Error: Request timed out"
     except requests.exceptions.ConnectionError:
         log(f"Lỗi: Không thể kết nối tới {url}. Kiểm tra mạng hoặc server")
@@ -42,6 +42,5 @@ def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='emulator-
         return f"Error: {str(e)}"
 
 if __name__ == "__main__":
-    # Thay 'emulator-5554' bằng device ID thực tế
-    result = send_follow_request(device_id='emulator-5554')
+    result = send_follow_request(device_id='906e90e9')
     print(result)
