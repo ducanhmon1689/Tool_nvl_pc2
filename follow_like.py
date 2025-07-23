@@ -1,51 +1,51 @@
-import os
-import time
-import subprocess
-from datetime import datetime
+import requests
+import json
 
-# Thiết lập thư mục log
-log_dir = os.path.join(os.path.dirname(__file__), 'log')
-os.makedirs(log_dir, exist_ok=True)
-log_file = os.path.join(log_dir, 'follow_client.log')
+# --- THÔNG TIN CẤU HÌNH ---
+# Thay 'YOUR_DEVICE_ID' bằng ID thiết bị bạn lấy được ở Bước 4
+DEVICE_ID = "YOUR_DEVICE_ID" 
 
-def log(message):
-    """Ghi log vào console và file"""
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"{timestamp} - {message}")
-    with open(log_file, 'a', encoding='utf-8') as f:
-        f.write(f"{timestamp} - {message}\n")
+# IP của PC 2 đang chạy web server
+SERVER_IP = "10.0.0.17"
 
-def perform_action(action_type):
-    """Thực hiện hành động Follow trên TikTok sử dụng Termux API"""
+# Port mà web server đang lắng nghe
+SERVER_PORT = 8000
+# -------------------------
+
+def send_follow_request():
+    """
+    Gửi yêu cầu thực hiện hành động FOLLOW đến web server.
+    """
+    url = f"http://{SERVER_IP}:{SERVER_PORT}/follow"
+    payload = {
+        "device_id": DEVICE_ID,
+        "task": "FOLLOW"
+    }
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
     try:
-        if action_type.lower() != 'follow':
-            log(f"Hành động {action_type} không được hỗ trợ!")
-            return "Error: Unsupported action"
-        
-        # Giả lập nhấn nút Follow trên TikTok
-        # Tọa độ (x, y) cần điều chỉnh tùy thiết bị
-        x, y = 500, 600  # Tọa độ giả định cho nút Follow
-        cmd = f"termux-toast 'Thực hiện Follow' && input tap {x} {y}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            log("Đã nhấn Follow thành công")
-            time.sleep(1)  # Đợi để đảm bảo hành động hoàn tất
-            return "Follow ok"
+        # Gửi yêu cầu POST đến server
+        response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=60)
+
+        # Kiểm tra mã trạng thái HTTP
+        if response.status_code == 200:
+            response_data = response.json()
+            if response_data.get("status") == "success":
+                return response_data.get("result", "No result returned")
+            else:
+                error_message = response_data.get("result", "Unknown error from server")
+                return f"Error: {error_message}"
         else:
-            log(f"Lỗi khi nhấn Follow: {result.stderr}")
-            return "Nhả follow"
-    except Exception as e:
-        log(f"Lỗi khi thực hiện Follow: {str(e)}")
-        return f"Error: {str(e)}"
+            return f"Error: Server returned status code {response.status_code}"
 
-def send_follow_request(url='http://10.0.0.17:8000/follow'):
-    """Hàm để tương thích với tds5.py, gọi perform_action và trả kết quả"""
-    # Vì chạy trên Termux, không cần gọi web server, gọi thẳng perform_action
-    result = perform_action('follow')
-    log(f"Kết quả: {result}")
-    return result
+    except requests.exceptions.RequestException as e:
+        # Bắt các lỗi liên quan đến kết nối (không tìm thấy server, timeout,...)
+        return f"Error: Could not connect to the server at {url}. Details: {e}"
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Phần này để bạn có thể chạy thử trực tiếp tệp này để kiểm tra
+    print("Đang gửi yêu cầu follow thử...")
     result = send_follow_request()
-    print(result)
+    print(f"Kết quả nhận được: {result}")
