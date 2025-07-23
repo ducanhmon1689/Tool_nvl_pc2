@@ -385,6 +385,7 @@ def main():
                                     # Lần thử nhận xu thứ 1
                                     nhan = tds.nhan_xu('TIKTOK_FOLLOW_API', 'TIKTOK_FOLLOW')
                                     # Nếu thất bại, thử lại lần 2 sau 5 giây
+                                    # Nếu thất bại, thử lại lần 2 sau 5 giây
                                     if nhan == 0:
                                         print(f'{vang}Nhận xu thất bại. Thử lại sau 5 giây...{trang}')
                                         sleep(5)
@@ -392,10 +393,9 @@ def main():
                                         # Nếu vẫn thất bại, hiển thị menu
                                         if nhan == 0:
                                             print(luc+'Nhận xu thất bại lần 2. Acc Tiktok của bạn ổn chứ?')
-                                            print(f'{thanh_xau}{luc}Nhập {red}[{vang}1{red}] {luc}Để Thay Nhiệm Vụ ')
-                                            print(f'{thanh_xau}{luc}Nhập {red}[{vang}2{red}] {luc}Thay Acc Tiktok ')
-                                            print(f'{thanh_xau}{luc}Nhấn {red}[{vang}Enter{red}] {luc}Để Tiếp Tục')
-                                            chon=input(f'{thanh_xau}{luc}Nhập {trang}===>: {vang}')
+                                            print(f'{thanh_xau}{luc}Tự động tiếp tục sau 2 giây...')
+                                            sleep(2)  # Chờ 2 giây để người dùng đọc thông báo
+                                            chon = ''  # Tự động gán giá trị rỗng, tương đương nhấn Enter
                                             if chon == '1':
                                                 ntool=2
                                                 break
