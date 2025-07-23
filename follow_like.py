@@ -1,6 +1,5 @@
 import os
-import time
-import subprocess
+import requests
 from datetime import datetime
 
 # Thiết lập thư mục log
@@ -15,37 +14,27 @@ def log(message):
     with open(log_file, 'a', encoding='utf-8') as f:
         f.write(f"{timestamp} - {message}\n")
 
-def perform_action(action_type):
-    """Thực hiện hành động Follow trên TikTok sử dụng ADB"""
+def send_follow_request(url='http://10.0.0.17:8000/follow', device_id='emulator-5554'):
+    """Gửi yêu cầu Follow tới PC và nhận kết quả"""
     try:
-        if action_type.lower() != 'follow':
-            log(f"Hành động {action_type} không được hỗ trợ!")
-            return "Error: Unsupported action"
+        # Gửi yêu cầu HTTP POST tới server trên PC
+        payload = {'device_id': device_id, 'task': 'FOLLOW'}
+        response = requests.post(url, json=payload, timeout=10)
         
-        # Giả lập nhấn nút Follow trên TikTok
-        # Tọa độ (x, y) cần điều chỉnh tùy thiết bị hoặc emulator
-        x, y = 500, 600  # Tọa độ giả định cho nút Follow
-        cmd = f"adb shell input tap {x} {y}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            log("Đã nhấn Follow thành công")
-            time.sleep(1)  # Đợi để đảm bảo hành động hoàn tất
-            return "Follow ok"
+        if response.status_code == 200:
+            result = response.json()
+            status = result.get('status')
+            result_msg = result.get('result')
+            log(f"Nhận phản hồi từ server: {status} - {result_msg}")
+            return result_msg
         else:
-            log(f"Lỗi khi nhấn Follow: {result.stderr}")
-            return "Nhả follow"
+            log(f"Lỗi khi gửi yêu cầu tới server: HTTP {response.status_code}")
+            return f"Error: HTTP {response.status_code}"
     except Exception as e:
-        log(f"Lỗi khi thực hiện Follow: {str(e)}")
+        log(f"Lỗi khi gửi yêu cầu tới server: {str(e)}")
         return f"Error: {str(e)}"
 
-def send_follow_request(url='http://10.0.0.17:8000/follow'):
-    """Hàm để tương thích với tds5.py, gọi perform_action và trả kết quả"""
-    # Vì chạy trên PC, không cần gọi web server, gọi thẳng perform_action
-    result = perform_action('follow')
-    log(f"Kết quả: {result}")
-    return result
-
 if __name__ == "__main__":
-    result = send_follow_request()
+    # Thay 'emulator-5554' bằng device ID thực tế của bạn
+    result = send_follow_request(device_id='emulator-5554')
     print(result)
