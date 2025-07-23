@@ -42,7 +42,7 @@ def send_follow_request(url='http://10.0.0.17:8000/follow'):
         device_id = get_device_id()
         payload = {'device_id': device_id, 'task': 'FOLLOW'}
         log(f"Gửi yêu cầu tới {url} với payload: {payload}")
-        response = requests.post(url, json=payload, timeout=60)
+        response = requests.post(url, json=payload, timeout=30)
         
         if response.status_code == 200:
             result = response.json()
