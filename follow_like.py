@@ -39,7 +39,7 @@ def perform_action(action_type):
         log(f"Lỗi khi thực hiện Follow: {str(e)}")
         return f"Error: {str(e)}"
 
-def send_follow_request(url='http://10.0.0.2:8000/follow'):
+def send_follow_request(url='http://10.0.0.17:8000/follow'):
     """Hàm để tương thích với tds5.py, gọi perform_action và trả kết quả"""
     # Vì chạy trên Termux, không cần gọi web server, gọi thẳng perform_action
     result = perform_action('follow')
