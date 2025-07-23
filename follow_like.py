@@ -48,7 +48,7 @@ def send_follow_request(url='http://10.0.0.17:8000/follow'):
             result = response.json()
             status = result.get('status')
             result_msg = result.get('result')
-            log(f"Nhận phản hồi từ server: {status} - {result_msg}")
+            #log(f"Nhận phản hồi từ server: {status} - {result_msg}")
             return result_msg
         else:
             log(f"Lỗi khi gửi yêu cầu tới server: HTTP {response.status_code}")
