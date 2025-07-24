@@ -261,7 +261,7 @@ def main():
     # Cài đặt mặc định theo yêu cầu của bạn
     nhiem_vu = '2'  # Tự động chọn nhiệm vụ Follow
     nv_nhan = 8     # Sau 8 job thì nhận xu
-    dl = 10         # Thời gian delay là 10 giây
+    dl = 6         # Thời gian delay là 10 giây
 
     print(f'{thanh_xau}{luc}Nhiệm Vụ Đã Chọn Mặc Định: {vang}Follow')
     print(f'{thanh_xau}{luc}Sau {vang}{nv_nhan} {luc}Nhiệm Vụ Thì Nhận Xu')
